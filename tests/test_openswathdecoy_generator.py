@@ -30,7 +30,7 @@ def _run_openswath_decoy_generator(regtest, temp_folder):
     os.chdir(temp_folder)
     data_path = os.path.join(DATA_FOLDER, "library_targets.pqp")
     shutil.copy(data_path, temp_folder)
-    cmdline = "easypqp openswath-decoy-generator  --in library_targets.pqp --out library.pqp --method pseudo-reverse"
+    cmdline = "fragpipe-speclib openswath-decoy-generator  --in library_targets.pqp --out library.pqp --method pseudo-reverse"
 
     stdout = _run_cmdline(cmdline)
 

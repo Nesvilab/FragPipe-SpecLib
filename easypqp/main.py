@@ -20,7 +20,7 @@ except ModuleNotFoundError:
     transform_pi0_lambda = None
 
 @click.group(chain=True)
-@click.version_option()
+@click.version_option(package_name='fragpipe-speclib')
 def cli():
     """
     EasyPQP: Simple library generation for OpenSWATH using MSFragger & PyProphet

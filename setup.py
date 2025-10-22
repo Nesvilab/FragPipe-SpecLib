@@ -9,14 +9,12 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='easypqp',
+    name='fragpipe-speclib',
     version='0.1.53',
-    description='EasyPQP: Simple library generation for OpenSWATH',
+    description='FragPipe-SpecLib: Simple library generation for FragPipe',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url="https://github.com/grosenberger/easypqp",
-	author="George Rosenberger",
-	author_email="gr2578@cumc.columbia.edu",
+    url="https://github.com/Nesvilab/FragPipe-SpecLib",
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: BSD License',
@@ -42,7 +40,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'easypqp=easypqp.main:cli',
+            'fragpipe-speclib=easypqp.main:cli',
         ],
     },
     extras_require={

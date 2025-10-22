@@ -30,7 +30,7 @@ def _run_targetedfileconverter(regtest, temp_folder, infile, outfile):
     os.chdir(temp_folder)
     data_path = os.path.join(DATA_FOLDER, infile)
     shutil.copy(data_path, temp_folder)
-    cmdline = f"easypqp targeted-file-converter  --in {infile} --out {outfile}"
+    cmdline = f"fragpipe-speclib targeted-file-converter  --in {infile} --out {outfile}"
 
     stdout = _run_cmdline(cmdline)
 

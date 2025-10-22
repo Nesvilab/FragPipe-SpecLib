@@ -30,7 +30,7 @@ def _run_openswath_assay_generator(regtest, temp_folder):
     os.chdir(temp_folder)
     data_path = os.path.join(DATA_FOLDER, "test_transition_list.tsv")
     shutil.copy(data_path, temp_folder)
-    cmdline = "easypqp openswath-assay-generator  --in test_transition_list.tsv --out library_targets.pqp"
+    cmdline = "fragpipe-speclib openswath-assay-generator  --in test_transition_list.tsv --out library_targets.pqp"
 
     stdout = _run_cmdline(cmdline)
 
