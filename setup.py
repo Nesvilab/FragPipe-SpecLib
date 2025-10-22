@@ -10,7 +10,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='fragpipe-speclib',
-    version='0.1.53',
+    version='0.1.55',
     description='FragPipe-SpecLib: Simple library generation for FragPipe',
     long_description=long_description,
     long_description_content_type='text/markdown',
