@@ -456,7 +456,7 @@ class pepxml:
 									# Remove UniProt prefixes if necessary
 									if decoy_prefix + "sp|" in prot:
 										proteins[decoy_prefix + prot.split("|")[1]] = ""
-									elif "sp|" in prot:
+									elif "sp|" in prot and prot.count("|") >= 2:
 										proteins[prot.split("|")[1]] = prot.split("|")[2].split(" ")[0].split("_")[0]
 									else:
 										proteins[prot] = prot
