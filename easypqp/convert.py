@@ -59,8 +59,20 @@ class psmtsv:
 	def parse_psmtsv(self):
 		# read relevant PSM table columns
 		psms = pd.read_csv(self.psmtsv_file, index_col=False, sep='\t', usecols=lambda col: col in set(psmtsv.relevant_psm_columns))
-
-		psms = psms.apply(self.parse_psm_info, axis=1)
+		start = time.perf_counter()
+		splits = psms['Spectrum'].str.split('.', expand=True)
+		psms['run_id'] = splits.iloc[:,0]
+		psms['scan_id'] = splits.iloc[:,1].astype(int)
+		rank_match = psms['Spectrum File'].str.extract(psmtsv.rank_pattern, expand=False)
+		if not rank_match.isna().all():
+			psms['hit_rank'] = rank_match.astype(int)
+		psms = pd.concat([
+			psms,
+			psms.apply(self.parse_assigned_modifications, axis=1, result_type='expand').set_axis(['modifications','nonlabile_modifications','nterm_modification','cterm_modification'], axis=1),
+			psms.apply(self.parse_protein_and_gene, axis=1, args=(self.decoy_prefix,), result_type='expand').set_axis(['decoy','protein_id','gene_id'], axis=1)],
+			axis=1)
+		end = time.perf_counter()
+		timestamped_echo(f"Info: Parsed {len(psms)} PSMs from {self.psmtsv_file} in {end - start:0.4f} seconds")
 		if self.max_glycan_q != 1:
 			if "Glycan q-value" in psms.columns:
 				psms = psms[(psms['Glycan q-value'] < self.max_glycan_q) | (psms['Glycan q-value'].isnull())]		# include null to include non-glyco peptides
@@ -181,16 +193,6 @@ class psmtsv:
 				self.psms = self.psms[self.psms['modified_peptide'] != '']
 				timestamped_echo("Info: Ignored %s PSMs with modifications not matched to Unimod" % (pre_size - len(self.psms)))
 
-	def parse_psm_info(self, psm_series):
-		"""
-		Perform parsing operations on a PSM entry
-		"""
-		psm_series = self.parse_spectrum(psm_series)
-		psm_series = self.parse_rank(psm_series)
-		psm_series = self.parse_assigned_modifications(psm_series)
-		psm_series = self.parse_protein_and_gene(psm_series, self.decoy_prefix)
-		return psm_series
-
 	def parse_spectrum(self, psm_series):
 		splits = psm_series['Spectrum'].split('.')
 		psm_series['run_id'] = splits[0]
@@ -248,17 +250,13 @@ class psmtsv:
 								nonlabile_modifications += '|{}${}'.format(location, 203.07937)
 					else:
 						nonlabile_modifications += '|{}${}'.format(location, mass)
-		psm_series['modifications'] = modifications
-		psm_series['nonlabile_modifications'] = nonlabile_modifications
-		psm_series['nterm_modification'] = nterm_modification
-		psm_series['cterm_modification'] = cterm_modification
-		return psm_series
+		return [modifications, nonlabile_modifications, nterm_modification, cterm_modification]
 
 	def parse_protein_and_gene(self, psm_series, decoy_prefix):
 		"""
 		Parse protein and gene IDs from identified and mapped entries and set total_num_proteins and decoy status.
 		"""
-		psm_series['decoy'] = psm_series['Protein'].startswith(decoy_prefix)
+		decoy_col = psm_series['Protein'].startswith(decoy_prefix)
 
 		protein_id = psm_series['Protein ID']
 		if pd.notnull(psm_series['Gene']):
@@ -283,9 +281,7 @@ class psmtsv:
 			for split in splits:
 				gene_id += ';{}'.format(split)
 
-		psm_series['protein_id'] = protein_id
-		psm_series['gene_id'] = gene_id
-		return psm_series
+		return [decoy_col, protein_id, gene_id]
 
 
 class pepxml:
