@@ -513,5 +513,5 @@ def generate(files, outfile, psmtsv, peptidetsv, perform_rt_calibration, rt_refe
     # Remove redundant columns
     pqp = pqp.drop(['Annotation'], axis=1)
 
-  # Write output TSV file
-  pqp.to_csv(outfile, sep="\t", index=False)
+  # Write output file
+  pqp.to_pickle(outfile)
