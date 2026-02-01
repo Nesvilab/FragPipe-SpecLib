@@ -482,8 +482,6 @@ def generate(files, outfile, psmtsv, peptidetsv, perform_rt_calibration, rt_refe
         run_pqp = pd.merge(meta_run, peaks, on=['modified_peptide','precursor_charge','scan_id'])[['precursor_mz','product_mz','fragment','intensity','irt','im','protein_id','gene_id','peptide_sequence','modified_peptide','precursor_charge']]
         run_pqp.columns = ['PrecursorMz','ProductMz','Annotation','LibraryIntensity','NormalizedRetentionTime','PrecursorIonMobility','ProteinId','GeneName','PeptideSequence','ModifiedPeptideSequence','PrecursorCharge']
         run_pqp['PrecursorCharge'] = run_pqp['PrecursorCharge'].astype(int)
-        run_pqp_path = os.path.splitext(peak_file['path'])[0]+"_run_peaks.tsv"
-        run_pqp.to_csv(run_pqp_path, sep="\t", index=False)
         if consensus:
           replicate_pqp.append(run_pqp)
 
